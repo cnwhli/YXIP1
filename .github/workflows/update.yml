@@ -1,0 +1,43 @@
+name: Update ip.txt every 6 hours
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # 每 6 小时
+  workflow_dispatch:       # 手动触发
+  push:
+    branches: [ "main" ]   # 初次推送时也跑一遍
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Collect IPs
+        run: |
+          python collect_ips.py
+
+      - name: Commit and push if changed
+        run: |
+          if [[ -n "$(git status --porcelain ip.txt)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ip.txt
+            git commit -m "chore: update ip.txt [skip ci]"
+            git push
+          else
+            echo "No changes in ip.txt"
+          fi
