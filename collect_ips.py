@@ -50,11 +50,7 @@ def fetch_text(s: requests.Session, url: str) -> str:
 
 # 基础正则候选
 RE_IPV4_PORT = re.compile(r"\b(?P<ip>(?:\d{1,3}\.){3}\d{1,3})(?::\d{1,5})?\b")
-RE_IPV6_BRACKET = re.compile(r"
-
-\[(?P<ip6>[0-9A-Fa-f:]+)\]
-
-(?::\d{1,5})?")
+RE_IPV6_BRACKET = re.compile(r"\[(?P<ip6>[0-9A-Fa-f:]+)\](?::\d{1,5})?")
 RE_IPV6_BARE = re.compile(r"(?<!:)(?P<ip6b>(?:[0-9A-Fa-f]{0,4}:){2,7}[0-9A-Fa-f]{0,4})(?!:)")
 
 def extract_ips(text: str) -> Set[str]:
